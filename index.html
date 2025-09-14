@@ -5,46 +5,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#2E7D32">
-    <meta name="description" content="Nigerian Budget Tracker - Offline-first budgeting app tailored for Nigerian households">
+    <meta name="description" content="Nigerian Budget Tracker - Offline-first budgeting app">
 
-```
+
 <title>Nigerian Budget Tracker</title>
 
-<!-- PWA Manifest -->
-<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTmlnZXJpYW4gQnVkZ2V0IFRyYWNrZXIiLCJzaG9ydF9uYW1lIjoiQnVkZ2V0IEFwcCIsInN0YXJ0X3VybCI6Ii8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMkU3RDMyIiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIZHBaSFJvUFNJeE1qZ2lJR2hsYVdkb2REMGlNVEk0SWo0OGNtVmpkQ0IzYVdSMGFEMGlNVEk0SWlCb1pXbG5hSFE5SWpFeU9DSWdabWxzYkQwaWl6SkZOMFF6TWlJdlBqeDBlSFFnZUQwaU5qUWlJSGs5SWpZMElpQm1hV3hzUFNJamRHaDBaU0lnWm05dWRDMXphWHBsUFNJeU5DSWdkR1Y0ZEMxaGJtTm9iM0k5SW0xcFpHUnNaU0lnWkc5dGFXNWhiblF0WW1GelpXeHBibVU5SWpjaUlHWnZiblF0ZDJWcFoyaDBQU0l6TURBT0lqNHVJRzVoYVhKaExuQnliMnBsWTNSZmJtRnRaVHM4TDNSNGRENDhMM04yWno0PSIsInNpemVzIjoiMTI4eDEyOCIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
-
-<!-- Icons for different devices -->
-<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4Ij48cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iIzJFN0QzMiIvPjx0ZXh0IHg9IjY0IiB5PSI2NCIgZmlsbD0iI2ZmZmZmZiIgZm9udC1zaXplPSIyNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiIGZvbnQtd2VpZ2h0PSIzMDAiPk5nPC90ZXh0Pjwvc3ZnPg==">
-
-<!-- iOS specific meta tags -->
+<!-- iOS PWA meta tags -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Budget App">
 
-<!-- Tailwind CSS via CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
-
 <style>
-    /* Custom styles for better iOS experience */
+    /* Reset and base styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
     body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #f9fafb;
+        color: #374151;
+        line-height: 1.5;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
         -webkit-tap-highlight-color: transparent;
-        overscroll-behavior: contain;
     }
     
-    input[type="number"] {
-        -moz-appearance: textfield;
+    .container {
+        max-width: 448px;
+        margin: 0 auto;
+        min-height: 100vh;
+        background-color: #f9fafb;
     }
     
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
+    /* Header */
+    .header {
+        background: linear-gradient(135deg, #2E7D32, #4CAF50);
+        color: white;
+        padding: 1rem;
+        text-align: center;
     }
     
-    .pwa-install-banner {
-        animation: slideDown 0.5s ease-out;
+    .header h1 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+    }
+    
+    .header p {
+        font-size: 0.875rem;
+        opacity: 0.9;
+    }
+    
+    .status-badges {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .badge {
+        background-color: rgba(0,0,0,0.2);
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+    
+    .badge.offline { background-color: #dc2626; }
+    .badge.online { background-color: #059669; }
+    
+    /* Install banner */
+    .install-banner {
+        background-color: #2563eb;
+        color: white;
+        padding: 1rem;
+        text-align: center;
+        display: none;
+    }
+    
+    .install-banner.show {
+        display: block;
+        animation: slideDown 0.3s ease-out;
     }
     
     @keyframes slideDown {
@@ -52,48 +98,792 @@
         to { transform: translateY(0); }
     }
     
-    /* iOS safe area handling */
-    @supports (padding-top: env(safe-area-inset-top)) {
-        .ios-safe-top {
-            padding-top: calc(1rem + env(safe-area-inset-top));
+    .install-btn {
+        background-color: #1d4ed8;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        margin-top: 0.5rem;
+    }
+    
+    .install-btn:hover {
+        background-color: #1e40af;
+    }
+    
+    /* Controls */
+    .controls {
+        padding: 1rem;
+        background-color: #e5e7eb;
+        border-bottom: 1px solid #d1d5db;
+    }
+    
+    .control-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.5rem 0.75rem;
+        border: none;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .btn-blue { background-color: #3b82f6; color: white; }
+    .btn-blue:hover { background-color: #2563eb; }
+    .btn-green { background-color: #10b981; color: white; }
+    .btn-green:hover { background-color: #059669; }
+    .btn-red { background-color: #ef4444; color: white; }
+    .btn-red:hover { background-color: #dc2626; }
+    
+    .save-status {
+        text-align: center;
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+    
+    /* Summary cards */
+    .summary {
+        padding: 1rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+    
+    .summary-card {
+        background: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #e5e7eb;
+    }
+    
+    .summary-label {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+    }
+    
+    .summary-value {
+        font-size: 1.125rem;
+        font-weight: bold;
+    }
+    
+    .positive { color: #059669; }
+    .negative { color: #dc2626; }
+    
+    /* Budget sections */
+    .content {
+        padding: 0 1rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .budget-section {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+    }
+    
+    .section-header {
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        display: flex;
+        justify-content: between;
+        align-items: center;
+    }
+    
+    .section-header.income { background-color: #ecfdf5; color: #065f46; }
+    .section-header.savings { background-color: #eff6ff; color: #1e40af; }
+    .section-header.housing { background-color: #ecfdf5; color: #065f46; }
+    .section-header.transport { background-color: #ecfdf5; color: #065f46; }
+    .section-header.family { background-color: #faf5ff; color: #7c2d12; }
+    .section-header.living { background-color: #ecfdf5; color: #065f46; }
+    .section-header.debt { background-color: #fef2f2; color: #991b1b; }
+    
+    .section-total {
+        font-weight: bold;
+        font-size: 0.875rem;
+    }
+    
+    .budget-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .budget-line:last-child {
+        border-bottom: none;
+    }
+    
+    .budget-line:nth-child(even) {
+        background-color: #fafafa;
+    }
+    
+    .budget-label {
+        font-size: 0.875rem;
+        color: #374151;
+        flex: 1;
+        padding-right: 0.5rem;
+    }
+    
+    .input-group {
+        display: flex;
+        align-items: center;
+    }
+    
+    .naira {
+        color: #059669;
+        font-weight: 600;
+        margin-right: 0.25rem;
+    }
+    
+    .budget-input {
+        width: 7rem;
+        padding: 0.5rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        text-align: right;
+        font-size: 0.875rem;
+    }
+    
+    .budget-input:focus {
+        outline: none;
+        border-color: #059669;
+        box-shadow: 0 0 0 1px #059669;
+    }
+    
+    /* Final summary */
+    .final-summary {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #e5e7eb;
+        padding: 1rem;
+    }
+    
+    .summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .summary-item h3 {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+    }
+    
+    .summary-item .value {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+    
+    .alert {
+        margin-top: 0.75rem;
+        padding: 0.75rem;
+        border-radius: 0.375rem;
+        text-align: center;
+        font-size: 0.875rem;
+    }
+    
+    .alert.success {
+        background-color: #d1fae5;
+        border: 1px solid #a7f3d0;
+        color: #065f46;
+    }
+    
+    .alert.error {
+        background-color: #fee2e2;
+        border: 1px solid #fecaca;
+        color: #991b1b;
+    }
+    
+    /* Info boxes */
+    .info-box {
+        border-radius: 0.5rem;
+        padding: 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .info-box.pwa {
+        background-color: #ecfdf5;
+        border: 1px solid #a7f3d0;
+    }
+    
+    .info-box.tips {
+        background-color: #fefce8;
+        border: 1px solid #fde047;
+    }
+    
+    .info-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .info-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .info-list li {
+        margin-bottom: 0.25rem;
+        font-size: 0.75rem;
+    }
+    
+    /* Hidden file input */
+    .hidden {
+        display: none;
+    }
+    
+    /* Icons */
+    .icon {
+        width: 1rem;
+        height: 1rem;
+        display: inline-block;
+        margin-right: 0.25rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 480px) {
+        .control-buttons {
+            flex-wrap: wrap;
         }
-        .ios-safe-bottom {
-            padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+        
+        .btn {
+            flex: 1;
+            min-width: 5rem;
         }
     }
 </style>
-```
+
 
 </head>
-<body class="bg-gray-50">
-    <div id="app"></div>
+<body>
+    <div class="container" id="app">
+        <div class="header">
+            <div class="status-badges" id="statusBadges"></div>
+            <h1>Nigerian Budget Tracker</h1>
+            <p id="monthYear"></p>
+        </div>
 
-```
-<!-- Lucide Icons via CDN -->
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <div class="install-banner" id="installBanner">
+        <div>📱 <strong>Install as App</strong></div>
+        <p style="font-size: 0.75rem; margin: 0.5rem 0;">Add to your home screen for the best experience</p>
+        <button class="install-btn" onclick="installApp()">Add to Home Screen</button>
+    </div>
+    
+    <div class="controls">
+        <div class="control-buttons">
+            <button class="btn btn-blue" onclick="exportData()">
+                📄 Export
+            </button>
+            <label class="btn btn-green">
+                📁 Import
+                <input type="file" accept=".json" onchange="importData(event)" class="hidden">
+            </label>
+            <button class="btn btn-red" onclick="clearData()">
+                🗑️ Clear
+            </button>
+        </div>
+        <div class="save-status" id="saveStatus">Auto-saved</div>
+    </div>
+    
+    <div class="summary">
+        <div class="summary-card">
+            <div class="summary-label">Total Income</div>
+            <div class="summary-value positive" id="totalIncomeDisplay">₦0</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">Money Left</div>
+            <div class="summary-value" id="moneyLeftDisplay">₦0</div>
+        </div>
+    </div>
+    
+    <div class="content" id="budgetContent">
+        <!-- Budget sections will be generated here -->
+    </div>
+    
+    <div style="padding: 0 1rem 2rem;">
+        <div class="info-box pwa">
+            <div class="info-title">📱 PWA Features Active:</div>
+            <ul class="info-list">
+                <li>✅ Works completely offline</li>
+                <li>✅ Data saved locally on your device</li>
+                <li>✅ Install as app on iPhone home screen</li>
+                <li>✅ Export/Import for backups</li>
+                <li>✅ No internet required after first load</li>
+            </ul>
+        </div>
+        
+        <br>
+        
+        <div class="info-box tips">
+            <div class="info-title">💡 Quick Tips:</div>
+            <ul class="info-list">
+                <li>• Always budget for generator fuel - power outages are common</li>
+                <li>• Prioritize emergency fund - aim for 6-12 months expenses</li>
+                <li>• Join Ajo/Esusu groups for disciplined savings</li>
+                <li>• Export your data regularly for backup</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
-<!-- React and ReactDOM via CDN -->
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-
-<!-- Babel for JSX transformation -->
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-<!-- Service Worker Registration -->
 <script>
-    // Register Service Worker for offline functionality
+    // Budget data structure
+    let budgetData = {
+        month: new Date().toLocaleDateString('en-US', { month: 'long' }),
+        year: new Date().getFullYear(),
+        
+        income: {
+            primarySalary: 0,
+            sideHustle: 0,
+            rentalIncome: 0,
+            investments: 0,
+            otherIncome: 0
+        },
+        
+        housing: {
+            rent: 0,
+            electricity: 0,
+            generatorFuel: 0,
+            water: 0,
+            security: 0,
+            internet: 0
+        },
+        
+        transportation: {
+            fuel: 0,
+            maintenance: 0,
+            publicTransport: 0,
+            insurance: 0
+        },
+        
+        communications: {
+            phonesBills: 0,
+            dataSubscription: 0
+        },
+        
+        savings: {
+            emergencyFund: 0,
+            retirement: 0,
+            investments: 0,
+            fixedDeposits: 0,
+            goalSavings: 0,
+            ajoEsusu: 0
+        },
+        
+        family: {
+            familySupport: 0,
+            schoolFees: 0,
+            childrenFeeding: 0,
+            healthcare: 0,
+            religious: 0,
+            community: 0
+        },
+        
+        living: {
+            groceries: 0,
+            cookingGas: 0,
+            diningOut: 0,
+            clothing: 0,
+            hairCare: 0,
+            hygiene: 0,
+            entertainment: 0,
+            gifts: 0,
+            miscellaneous: 0
+        },
+        
+        debt: {
+            bankLoans: 0,
+            creditCards: 0,
+            personalLoans: 0,
+            microfinance: 0
+        }
+    };
+
+    // Budget categories configuration
+    const budgetCategories = {
+        income: {
+            title: '💰 Income',
+            class: 'income',
+            fields: {
+                primarySalary: 'Primary Salary/Business',
+                sideHustle: 'Side Hustle',
+                rentalIncome: 'Rental Income',
+                investments: 'Investment Returns',
+                otherIncome: 'Other Income'
+            }
+        },
+        savings: {
+            title: '💎 Savings & Investments',
+            class: 'savings',
+            fields: {
+                emergencyFund: 'Emergency Fund',
+                retirement: 'Retirement (PFA/RSA)',
+                investments: 'Investments',
+                fixedDeposits: 'Fixed Deposits/T-Bills',
+                goalSavings: 'Goal Savings',
+                ajoEsusu: 'Ajo/Esusu'
+            }
+        },
+        housing: {
+            title: '🏠 Housing & Utilities',
+            class: 'housing',
+            fields: {
+                rent: 'Rent/Mortgage',
+                electricity: 'Electricity (NEPA)',
+                generatorFuel: 'Generator Fuel',
+                water: 'Water Supply',
+                security: 'Security/Estate Fees',
+                internet: 'Internet/Cable'
+            }
+        },
+        transportation: {
+            title: '🚗 Transportation',
+            class: 'transport',
+            fields: {
+                fuel: 'Fuel/Petrol',
+                maintenance: 'Vehicle Maintenance',
+                publicTransport: 'Uber/Keke/Bus',
+                insurance: 'Vehicle Insurance'
+            }
+        },
+        communications: {
+            title: '📱 Communications',
+            class: 'transport',
+            fields: {
+                phonesBills: 'Mobile Bills (MTN/Airtel)',
+                dataSubscription: 'Data Subscription'
+            }
+        },
+        family: {
+            title: '👨‍👩‍👧‍👦 Family & Social',
+            class: 'family',
+            fields: {
+                familySupport: 'Family Support',
+                schoolFees: 'School Fees',
+                childrenFeeding: 'Children\'s Feeding',
+                healthcare: 'Healthcare',
+                religious: 'Church/Mosque',
+                community: 'Community Dues'
+            }
+        },
+        living: {
+            title: '🛒 Living Expenses',
+            class: 'living',
+            fields: {
+                groceries: 'Groceries & Market',
+                cookingGas: 'Cooking Gas',
+                diningOut: 'Dining Out',
+                clothing: 'Clothing & Shoes',
+                hairCare: 'Hair Care/Barbing',
+                hygiene: 'Personal Hygiene',
+                entertainment: 'Entertainment',
+                gifts: 'Gifts & Occasions',
+                miscellaneous: 'Miscellaneous'
+            }
+        },
+        debt: {
+            title: '💳 Debt Payments',
+            class: 'debt',
+            fields: {
+                bankLoans: 'Bank Loans',
+                creditCards: 'Credit Card Payments',
+                personalLoans: 'Personal Loans',
+                microfinance: 'Microfinance Loans'
+            }
+        }
+    };
+
+    // PWA variables
+    let deferredPrompt;
+    let isOnline = navigator.onLine;
+
+    // Load data from localStorage
+    function loadData() {
+        const saved = localStorage.getItem('nigerianBudget');
+        if (saved) {
+            try {
+                budgetData = { ...budgetData, ...JSON.parse(saved) };
+            } catch (e) {
+                console.error('Error loading saved data:', e);
+            }
+        }
+    }
+
+    // Save data to localStorage
+    function saveData() {
+        try {
+            localStorage.setItem('nigerianBudget', JSON.stringify(budgetData));
+            document.getElementById('saveStatus').textContent = `Saved at ${new Date().toLocaleTimeString()}`;
+        } catch (e) {
+            console.error('Error saving data:', e);
+            document.getElementById('saveStatus').textContent = 'Save failed';
+        }
+    }
+
+    // Format currency
+    function formatCurrency(amount) {
+        return '₦' + Math.round(amount).toLocaleString();
+    }
+
+    // Calculate category total
+    function calculateCategoryTotal(category) {
+        return Object.values(budgetData[category]).reduce((sum, value) => sum + (parseFloat(value) || 0), 0);
+    }
+
+    // Update input value
+    function updateValue(category, field, value) {
+        budgetData[category][field] = value;
+        saveData();
+        updateSummary();
+    }
+
+    // Update summary displays
+    function updateSummary() {
+        const totalIncome = calculateCategoryTotal('income');
+        const totalHousing = calculateCategoryTotal('housing');
+        const totalTransportation = calculateCategoryTotal('transportation');
+        const totalCommunications = calculateCategoryTotal('communications');
+        const totalSavings = calculateCategoryTotal('savings');
+        const totalFamily = calculateCategoryTotal('family');
+        const totalLiving = calculateCategoryTotal('living');
+        const totalDebt = calculateCategoryTotal('debt');
+        
+        const totalExpenses = totalHousing + totalTransportation + totalCommunications + totalSavings + totalFamily + totalLiving + totalDebt;
+        const moneyLeft = totalIncome - totalExpenses;
+
+        document.getElementById('totalIncomeDisplay').textContent = formatCurrency(totalIncome);
+        const moneyLeftEl = document.getElementById('moneyLeftDisplay');
+        moneyLeftEl.textContent = formatCurrency(moneyLeft);
+        moneyLeftEl.className = 'summary-value ' + (moneyLeft >= 0 ? 'positive' : 'negative');
+
+        // Update section totals
+        Object.keys(budgetCategories).forEach(category => {
+            const totalEl = document.getElementById(`total-${category}`);
+            if (totalEl) {
+                totalEl.textContent = formatCurrency(calculateCategoryTotal(category));
+            }
+        });
+
+        // Update final summary
+        updateFinalSummary(totalExpenses, moneyLeft);
+    }
+
+    // Update final summary section
+    function updateFinalSummary(totalExpenses, moneyLeft) {
+        const finalSummaryHtml = `
+            <div class="final-summary">
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <h3>Total Expenses</h3>
+                        <div class="value negative">${formatCurrency(totalExpenses)}</div>
+                    </div>
+                    <div class="summary-item">
+                        <h3>Balance</h3>
+                        <div class="value ${moneyLeft >= 0 ? 'positive' : 'negative'}">${formatCurrency(moneyLeft)}</div>
+                    </div>
+                </div>
+                ${moneyLeft < 0 ? 
+                    `<div class="alert error">⚠️ You're over budget by ${formatCurrency(Math.abs(moneyLeft))}</div>` :
+                    `<div class="alert success">✅ Great! You have ${formatCurrency(moneyLeft)} left to allocate</div>`
+                }
+            </div>
+        `;
+        
+        // Find and replace or append final summary
+        const content = document.getElementById('budgetContent');
+        const existingSummary = content.querySelector('.final-summary');
+        if (existingSummary) {
+            existingSummary.outerHTML = finalSummaryHtml;
+        } else {
+            content.insertAdjacentHTML('beforeend', finalSummaryHtml);
+        }
+    }
+
+    // Generate budget section HTML
+    function generateBudgetSection(categoryKey, categoryData) {
+        const total = calculateCategoryTotal(categoryKey);
+        
+        let fieldsHtml = '';
+        Object.entries(categoryData.fields).forEach(([fieldKey, fieldLabel]) => {
+            const value = budgetData[categoryKey][fieldKey] || '';
+            fieldsHtml += `
+                <div class="budget-line">
+                    <div class="budget-label">${fieldLabel}</div>
+                    <div class="input-group">
+                        <span class="naira">₦</span>
+                        <input type="number" 
+                               class="budget-input" 
+                               value="${value}" 
+                               placeholder="0"
+                               inputmode="decimal"
+                               onchange="updateValue('${categoryKey}', '${fieldKey}', this.value)">
+                    </div>
+                </div>
+            `;
+        });
+
+        return `
+            <div class="budget-section">
+                <div class="section-header ${categoryData.class}">
+                    <span>${categoryData.title}</span>
+                    <span class="section-total" id="total-${categoryKey}">${formatCurrency(total)}</span>
+                </div>
+                ${fieldsHtml}
+            </div>
+        `;
+    }
+
+    // Export data
+    function exportData() {
+        const dataStr = JSON.stringify(budgetData, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `budget-${budgetData.month}-${budgetData.year}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    // Import data
+    function importData(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    budgetData = { ...budgetData, ...importedData };
+                    saveData();
+                    renderApp();
+                    alert('Budget data imported successfully!');
+                } catch (error) {
+                    alert('Error importing data. Please check the file format.');
+                }
+            };
+            reader.readAsText(file);
+        }
+        event.target.value = '';
+    }
+
+    // Clear all data
+    function clearData() {
+        if (confirm('Are you sure you want to clear all budget data? This cannot be undone.')) {
+            localStorage.removeItem('nigerianBudget');
+            location.reload();
+        }
+    }
+
+    // Install PWA
+    function installApp() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    document.getElementById('installBanner').classList.remove('show');
+                }
+                deferredPrompt = null;
+            });
+        }
+    }
+
+    // Update online/offline status
+    function updateOnlineStatus() {
+        const statusBadges = document.getElementById('statusBadges');
+        statusBadges.innerHTML = isOnline ? 
+            '<div class="badge online">Online</div><div class="badge">PWA Ready</div>' :
+            '<div class="badge offline">Offline</div><div class="badge">PWA Ready</div>';
+    }
+
+    // Render the complete app
+    function renderApp() {
+        // Update month/year
+        document.getElementById('monthYear').textContent = `${budgetData.month} ${budgetData.year}`;
+        
+        // Generate budget sections
+        const content = document.getElementById('budgetContent');
+        let sectionsHtml = '';
+        
+        Object.entries(budgetCategories).forEach(([categoryKey, categoryData]) => {
+            sectionsHtml += generateBudgetSection(categoryKey, categoryData);
+        });
+        
+        content.innerHTML = sectionsHtml;
+        
+        // Update summary
+        updateSummary();
+        
+        // Update online status
+        updateOnlineStatus();
+    }
+
+    // Initialize app
+    function init() {
+        loadData();
+        renderApp();
+
+        // PWA install prompt handling
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBanner').classList.add('show');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('installBanner').classList.remove('show');
+            deferredPrompt = null;
+        });
+
+        // Online/offline status
+        window.addEventListener('online', () => {
+            isOnline = true;
+            updateOnlineStatus();
+        });
+
+        window.addEventListener('offline', () => {
+            isOnline = false;
+            updateOnlineStatus();
+        });
+
+        console.log('Nigerian Budget Tracker loaded successfully!');
+    }
+
+    // Start the app when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    // Service Worker registration
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
             const swCode = `
                 const CACHE_NAME = 'nigerian-budget-v1.0.0';
-                const urlsToCache = [
-                    '/',
-                    'https://cdn.tailwindcss.com',
-                    'https://unpkg.com/lucide@latest/dist/umd/lucide.js',
-                    'https://unpkg.com/react@18/umd/react.production.min.js',
-                    'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
-                    'https://unpkg.com/@babel/standalone/babel.min.js'
-                ];
+                const urlsToCache = ['/'];
 
                 self.addEventListener('install', function(event) {
                     event.waitUntil(
@@ -117,500 +907,4 @@
                 });
             `;
             
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            const swUrl = URL.createObjectURL(blob);
-            
-            navigator.serviceWorker.register(swUrl)
-                .then(function(registration) {
-                    console.log('ServiceWorker registration successful');
-                })
-                .catch(function(err) {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
-        });
-    }
-</script>
-
-<script type="text/babel">
-    const { useState, useEffect, createElement: h } = React;
-    const { createRoot } = ReactDOM;
-
-    const NigerianBudgetPWA = () => {
-        // Initialize state with data from localStorage if available
-        const [budget, setBudget] = useState(() => {
-            const saved = localStorage.getItem('nigerianBudget');
-            if (saved) {
-                try {
-                    return JSON.parse(saved);
-                } catch (e) {
-                    console.error('Error parsing saved budget:', e);
-                }
-            }
-            return {
-                month: new Date().toLocaleDateString('en-US', { month: 'long' }),
-                year: new Date().getFullYear(),
-                exchangeRate: 1650,
-                
-                income: {
-                    primarySalary: 0,
-                    sideHustle: 0,
-                    rentalIncome: 0,
-                    investments: 0,
-                    otherIncome: 0
-                },
-                
-                housing: {
-                    rent: 0,
-                    electricity: 0,
-                    generatorFuel: 0,
-                    water: 0,
-                    security: 0,
-                    internet: 0
-                },
-                
-                transportation: {
-                    fuel: 0,
-                    maintenance: 0,
-                    publicTransport: 0,
-                    insurance: 0
-                },
-                
-                communications: {
-                    phonesBills: 0,
-                    dataSubscription: 0
-                },
-                
-                savings: {
-                    emergencyFund: 0,
-                    retirement: 0,
-                    investments: 0,
-                    fixedDeposits: 0,
-                    goalSavings: 0,
-                    ajoEsusu: 0
-                },
-                
-                family: {
-                    familySupport: 0,
-                    schoolFees: 0,
-                    childrenFeeding: 0,
-                    healthcare: 0,
-                    religious: 0,
-                    community: 0
-                },
-                
-                living: {
-                    groceries: 0,
-                    cookingGas: 0,
-                    diningOut: 0,
-                    clothing: 0,
-                    hairCare: 0,
-                    hygiene: 0,
-                    entertainment: 0,
-                    gifts: 0,
-                    miscellaneous: 0
-                },
-                
-                debt: {
-                    bankLoans: 0,
-                    creditCards: 0,
-                    personalLoans: 0,
-                    microfinance: 0
-                }
-            };
-        });
-
-        const [showInstallPrompt, setShowInstallPrompt] = useState(false);
-        const [deferredPrompt, setDeferredPrompt] = useState(null);
-        const [isOnline, setIsOnline] = useState(navigator.onLine);
-        const [lastSaved, setLastSaved] = useState(new Date());
-
-        // Save to localStorage whenever budget changes
-        useEffect(() => {
-            try {
-                localStorage.setItem('nigerianBudget', JSON.stringify(budget));
-                setLastSaved(new Date());
-            } catch (e) {
-                console.error('Error saving to localStorage:', e);
-            }
-        }, [budget]);
-
-        // PWA Install prompt handling
-        useEffect(() => {
-            const handleBeforeInstallPrompt = (e) => {
-                e.preventDefault();
-                setDeferredPrompt(e);
-                setShowInstallPrompt(true);
-            };
-
-            const handleAppInstalled = () => {
-                setShowInstallPrompt(false);
-                setDeferredPrompt(null);
-            };
-
-            // Online/offline status
-            const handleOnline = () => setIsOnline(true);
-            const handleOffline = () => setIsOnline(false);
-
-            window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-            window.addEventListener('appinstalled', handleAppInstalled);
-            window.addEventListener('online', handleOnline);
-            window.addEventListener('offline', handleOffline);
-
-            return () => {
-                window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-                window.removeEventListener('appinstalled', handleAppInstalled);
-                window.removeEventListener('online', handleOnline);
-                window.removeEventListener('offline', handleOffline);
-            };
-        }, []);
-
-        // Install PWA function
-        const handleInstallClick = async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    setShowInstallPrompt(false);
-                }
-                setDeferredPrompt(null);
-            }
-        };
-
-        // Calculate totals
-        const calculateCategoryTotal = (category) => {
-            return Object.values(category).reduce((sum, value) => sum + (parseFloat(value) || 0), 0);
-        };
-
-        const totalIncome = calculateCategoryTotal(budget.income);
-        const totalHousing = calculateCategoryTotal(budget.housing);
-        const totalTransportation = calculateCategoryTotal(budget.transportation);
-        const totalCommunications = calculateCategoryTotal(budget.communications);
-        const totalSavings = calculateCategoryTotal(budget.savings);
-        const totalFamily = calculateCategoryTotal(budget.family);
-        const totalLiving = calculateCategoryTotal(budget.living);
-        const totalDebt = calculateCategoryTotal(budget.debt);
-
-        const totalExpenses = totalHousing + totalTransportation + totalCommunications + totalSavings + totalFamily + totalLiving + totalDebt;
-        const moneyLeft = totalIncome - totalExpenses;
-
-        // Update budget function
-        const updateBudget = (category, field, value) => {
-            setBudget(prev => ({
-                ...prev,
-                [category]: {
-                    ...prev[category],
-                    [field]: value
-                }
-            }));
-        };
-
-        // Export/Import functions for backup
-        const exportData = () => {
-            const dataStr = JSON.stringify(budget, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `budget-${budget.month}-${budget.year}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        };
-
-        const importData = (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const importedData = JSON.parse(e.target.result);
-                        setBudget(importedData);
-                        alert('Budget data imported successfully!');
-                    } catch (error) {
-                        alert('Error importing data. Please check the file format.');
-                    }
-                };
-                reader.readAsText(file);
-            }
-            event.target.value = ''; // Reset file input
-        };
-
-        // Clear all data
-        const clearAllData = () => {
-            if (confirm('Are you sure you want to clear all budget data? This cannot be undone.')) {
-                localStorage.removeItem('nigerianBudget');
-                window.location.reload();
-            }
-        };
-
-        // Format currency
-        const formatCurrency = (amount) => {
-            return new Intl.NumberFormat('en-NG', {
-                style: 'currency',
-                currency: 'NGN',
-                minimumFractionDigits: 0
-            }).format(amount);
-        };
-
-        // Input component
-        const BudgetInput = ({ category, field, label, placeholder = "0" }) => (
-            <div className="flex justify-between items-center py-3 px-4 border-b border-gray-100">
-                <label className="text-sm text-gray-700 flex-1 pr-2">{label}</label>
-                <div className="flex items-center">
-                    <span className="text-green-600 font-semibold mr-1">₦</span>
-                    <input
-                        type="number"
-                        inputMode="decimal"
-                        value={budget[category][field] || ''}
-                        onChange={(e) => updateBudget(category, field, e.target.value)}
-                        className="w-28 p-2 text-right border border-gray-300 rounded-md text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
-                        placeholder={placeholder}
-                    />
-                </div>
-            </div>
-        );
-
-        // Section component
-        const BudgetSection = ({ title, icon: Icon, children, total, bgColor = "bg-green-50" }) => (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4 overflow-hidden">
-                <div className={`${bgColor} px-4 py-3 flex items-center justify-between`}>
-                    <div className="flex items-center">
-                        <Icon className="w-5 h-5 text-green-600 mr-2" />
-                        <h3 className="font-semibold text-gray-800 text-sm">{title}</h3>
-                    </div>
-                    {total !== undefined && (
-                        <span className="font-bold text-green-700 text-sm">{formatCurrency(total)}</span>
-                    )}
-                </div>
-                <div className="divide-y divide-gray-100">{children}</div>
-            </div>
-        );
-
-        return (
-            <div className="max-w-md mx-auto bg-gray-50 min-h-screen">
-                {/* Header */}
-                <div className="bg-green-600 text-white p-4 ios-safe-top">
-                    <div className="flex justify-between items-center">
-                        <div className="text-center flex-1">
-                            <h1 className="text-xl font-bold">Nigerian Budget Tracker</h1>
-                            <p className="text-green-100 text-sm">{budget.month} {budget.year}</p>
-                        </div>
-                        <div className="flex flex-col items-end ml-2 text-xs">
-                            {!isOnline && (
-                                <div className="bg-red-500 text-white px-2 py-1 rounded mb-1">
-                                    Offline
-                                </div>
-                            )}
-                            <div className="bg-green-500 text-white px-2 py-1 rounded">
-                                PWA Ready
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* PWA Install Banner */}
-                {showInstallPrompt && (
-                    <div className="bg-blue-600 text-white p-4 text-center pwa-install-banner">
-                        <div className="flex items-center justify-center mb-2">
-                            <lucide.Smartphone className="w-5 h-5 mr-2" />
-                            <span className="text-sm font-semibold">Install as App</span>
-                        </div>
-                        <p className="text-xs mb-3 text-blue-100">Add to your home screen for the best experience</p>
-                        <button 
-                            onClick={handleInstallClick}
-                            className="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded text-sm font-semibold transition-colors"
-                        >
-                            Add to Home Screen
-                        </button>
-                    </div>
-                )}
-
-                {/* Backup Controls */}
-                <div className="p-4 bg-gray-100 border-b">
-                    <div className="flex justify-center space-x-3 mb-2">
-                        <button 
-                            onClick={exportData}
-                            className="flex items-center bg-blue-500 text-white px-3 py-2 rounded text-sm hover:bg-blue-600 transition-colors"
-                        >
-                            <lucide.Download className="w-4 h-4 mr-1" />
-                            Export
-                        </button>
-                        <label className="flex items-center bg-green-500 text-white px-3 py-2 rounded text-sm hover:bg-green-600 cursor-pointer transition-colors">
-                            <lucide.Upload className="w-4 h-4 mr-1" />
-                            Import
-                            <input 
-                                type="file" 
-                                accept=".json" 
-                                onChange={importData} 
-                                className="hidden"
-                            />
-                        </label>
-                        <button 
-                            onClick={clearAllData}
-                            className="flex items-center bg-red-500 text-white px-3 py-2 rounded text-sm hover:bg-red-600 transition-colors"
-                        >
-                            <lucide.Trash2 className="w-4 h-4 mr-1" />
-                            Clear
-                        </button>
-                    </div>
-                    <p className="text-xs text-gray-600 text-center">
-                        Last saved: {lastSaved.toLocaleTimeString()}
-                    </p>
-                </div>
-
-                {/* Summary Cards */}
-                <div className="p-4 grid grid-cols-2 gap-3">
-                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                        <div className="text-xs text-gray-600 mb-1">Total Income</div>
-                        <div className="text-lg font-bold text-green-600">{formatCurrency(totalIncome)}</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                        <div className="text-xs text-gray-600 mb-1">Money Left</div>
-                        <div className={`text-lg font-bold ${moneyLeft >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {formatCurrency(moneyLeft)}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="px-4 pb-4 space-y-4 ios-safe-bottom">
-                    {/* Income Section */}
-                    <BudgetSection title="Income" icon={lucide.DollarSign} total={totalIncome}>
-                        <BudgetInput category="income" field="primarySalary" label="Primary Salary/Business" />
-                        <BudgetInput category="income" field="sideHustle" label="Side Hustle" />
-                        <BudgetInput category="income" field="rentalIncome" label="Rental Income" />
-                        <BudgetInput category="income" field="investments" label="Investment Returns" />
-                        <BudgetInput category="income" field="otherIncome" label="Other Income" />
-                    </BudgetSection>
-
-                    {/* Savings First */}
-                    <BudgetSection title="Savings & Investments" icon={lucide.TrendingUp} total={totalSavings} bgColor="bg-blue-50">
-                        <BudgetInput category="savings" field="emergencyFund" label="Emergency Fund" />
-                        <BudgetInput category="savings" field="retirement" label="Retirement (PFA/RSA)" />
-                        <BudgetInput category="savings" field="investments" label="Investments" />
-                        <BudgetInput category="savings" field="fixedDeposits" label="Fixed Deposits/T-Bills" />
-                        <BudgetInput category="savings" field="goalSavings" label="Goal Savings" />
-                        <BudgetInput category="savings" field="ajoEsusu" label="Ajo/Esusu" />
-                    </BudgetSection>
-
-                    {/* Housing */}
-                    <BudgetSection title="Housing & Utilities" icon={lucide.Home} total={totalHousing}>
-                        <BudgetInput category="housing" field="rent" label="Rent/Mortgage" />
-                        <BudgetInput category="housing" field="electricity" label="Electricity (NEPA)" />
-                        <BudgetInput category="housing" field="generatorFuel" label="Generator Fuel" />
-                        <BudgetInput category="housing" field="water" label="Water Supply" />
-                        <BudgetInput category="housing" field="security" label="Security/Estate Fees" />
-                        <BudgetInput category="housing" field="internet" label="Internet/Cable" />
-                    </BudgetSection>
-
-                    {/* Transportation */}
-                    <BudgetSection title="Transportation" icon={lucide.Car} total={totalTransportation}>
-                        <BudgetInput category="transportation" field="fuel" label="Fuel/Petrol" />
-                        <BudgetInput category="transportation" field="maintenance" label="Vehicle Maintenance" />
-                        <BudgetInput category="transportation" field="publicTransport" label="Uber/Keke/Bus" />
-                        <BudgetInput category="transportation" field="insurance" label="Vehicle Insurance" />
-                    </BudgetSection>
-
-                    {/* Communications */}
-                    <BudgetSection title="Communications" icon={lucide.Smartphone} total={totalCommunications}>
-                        <BudgetInput category="communications" field="phonesBills" label="Mobile Bills (MTN/Airtel)" />
-                        <BudgetInput category="communications" field="dataSubscription" label="Data Subscription" />
-                    </BudgetSection>
-
-                    {/* Family & Social */}
-                    <BudgetSection title="Family & Social" icon={lucide.Users} total={totalFamily} bgColor="bg-purple-50">
-                        <BudgetInput category="family" field="familySupport" label="Family Support" />
-                        <BudgetInput category="family" field="schoolFees" label="School Fees" />
-                        <BudgetInput category="family" field="childrenFeeding" label="Children's Feeding" />
-                        <BudgetInput category="family" field="healthcare" label="Healthcare" />
-                        <BudgetInput category="family" field="religious" label="Church/Mosque" />
-                        <BudgetInput category="family" field="community" label="Community Dues" />
-                    </BudgetSection>
-
-                    {/* Living Expenses */}
-                    <BudgetSection title="Living Expenses" icon={lucide.ShoppingCart} total={totalLiving}>
-                        <BudgetInput category="living" field="groceries" label="Groceries & Market" />
-                        <BudgetInput category="living" field="cookingGas" label="Cooking Gas" />
-                        <BudgetInput category="living" field="diningOut" label="Dining Out" />
-                        <BudgetInput category="living" field="clothing" label="Clothing & Shoes" />
-                        <BudgetInput category="living" field="hairCare" label="Hair Care/Barbing" />
-                        <BudgetInput category="living" field="hygiene" label="Personal Hygiene" />
-                        <BudgetInput category="living" field="entertainment" label="Entertainment" />
-                        <BudgetInput category="living" field="gifts" label="Gifts & Occasions" />
-                        <BudgetInput category="living" field="miscellaneous" label="Miscellaneous" />
-                    </BudgetSection>
-
-                    {/* Debt Payments */}
-                    <BudgetSection title="Debt Payments" icon={lucide.CreditCard} total={totalDebt} bgColor="bg-red-50">
-                        <BudgetInput category="debt" field="bankLoans" label="Bank Loans" />
-                        <BudgetInput category="debt" field="creditCards" label="Credit Card Payments" />
-                        <BudgetInput category="debt" field="personalLoans" label="Personal Loans" />
-                        <BudgetInput category="debt" field="microfinance" label="Microfinance Loans" />
-                    </BudgetSection>
-
-                    {/* Final Summary */}
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                        <div className="grid grid-cols-2 gap-4 text-center">
-                            <div>
-                                <div className="text-sm text-gray-600">Total Expenses</div>
-                                <div className="text-xl font-bold text-red-600">{formatCurrency(totalExpenses)}</div>
-                            </div>
-                            <div>
-                                <div className="text-sm text-gray-600">Balance</div>
-                                <div className={`text-xl font-bold ${moneyLeft >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {formatCurrency(moneyLeft)}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        {moneyLeft < 0 && (
-                            <div className="mt-3 p-3 bg-red-100 border border-red-200 rounded text-red-700 text-sm text-center">
-                                ⚠️ You're over budget by {formatCurrency(Math.abs(moneyLeft))}
-                            </div>
-                        )}
-                        
-                        {moneyLeft > 0 && (
-                            <div className="mt-3 p-3 bg-green-100 border border-green-200 rounded text-green-700 text-sm text-center">
-                                ✅ Great! You have {formatCurrency(moneyLeft)} left to allocate
-                            </div>
-                        )}
-                    </div>
-
-                    {/* PWA Status */}
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm">
-                        <div className="font-semibold text-green-800 mb-2">
-                            📱 PWA Features Active:
-                        </div>
-                        <ul className="text-green-700 space-y-1 text-xs">
-                            <li>✅ Works completely offline</li>
-                            <li>✅ Data saved locally on your device</li>
-                            <li>✅ Install as app on iPhone home screen</li>
-                            <li>✅ Export/Import for backups</li>
-                            <li>✅ No internet required after first load</li>
-                        </ul>
-                    </div>
-
-                    {/* Tips */}
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
-                        <div className="font-semibold text-yellow-800 mb-2">💡 Quick Tips:</div>
-                        <ul className="text-yellow-700 space-y-1 text-xs">
-                            <li>• Always budget for generator fuel - power outages are common</li>
-                            <li>• Prioritize emergency fund - aim for 6-12 months expenses</li>
-                            <li>• Join Ajo/Esusu groups for disciplined savings</li>
-                            <li>• Export your data regularly for backup</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
-    // Render the app
-    const container = document.getElementById('app');
-    const root = createRoot(container);
-    root.render(<NigerianBudgetPWA />);
-</script>
-```
-
-</body>
-</html>
+            const blob
