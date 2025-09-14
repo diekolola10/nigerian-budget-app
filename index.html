@@ -1,912 +1,587 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#2E7D32">
-    <meta name="description" content="Nigerian Budget Tracker - Offline-first budgeting app">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#2E7D32" />
+  <meta name="description" content="Nigerian Budget Tracker - Offline-first budgeting app" />
+  <title>Nigerian Budget Tracker</title>
 
-```
-<title>Nigerian Budget Tracker</title>
+  <!-- iOS PWA meta tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Budget App" />
 
-<!-- iOS PWA meta tags -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Budget App">
-
-<style>
+  <style>
     /* Reset and base styles */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background-color: #f9fafb;
-        color: #374151;
-        line-height: 1.5;
-        -webkit-user-select: none;
-        -webkit-touch-callout: none;
-        -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f9fafb; color: #374151; line-height: 1.5;
+      -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
     }
-    
-    .container {
-        max-width: 448px;
-        margin: 0 auto;
-        min-height: 100vh;
-        background-color: #f9fafb;
-    }
-    
+    .container { max-width: 448px; margin: 0 auto; min-height: 100vh; background-color: #f9fafb; }
+
     /* Header */
     .header {
-        background: linear-gradient(135deg, #2E7D32, #4CAF50);
-        color: white;
-        padding: 1rem;
-        text-align: center;
+      background: linear-gradient(135deg, #2E7D32, #4CAF50);
+      color: white; padding: 1rem; text-align: center; position: relative;
     }
-    
-    .header h1 {
-        font-size: 1.25rem;
-        font-weight: bold;
-        margin-bottom: 0.25rem;
-    }
-    
-    .header p {
-        font-size: 0.875rem;
-        opacity: 0.9;
-    }
-    
-    .status-badges {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-    
-    .badge {
-        background-color: rgba(0,0,0,0.2);
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-        white-space: nowrap;
-    }
-    
+    .header h1 { font-size: 1.25rem; font-weight: bold; margin-bottom: 0.25rem; }
+    .header p { font-size: 0.875rem; opacity: 0.95; }
+
+    .status-badges { position: absolute; top: 1rem; right: 1rem; display: flex; flex-direction: column; gap: 0.25rem; }
+    .badge { background-color: rgba(0,0,0,0.2); padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; white-space: nowrap; color: white; }
     .badge.offline { background-color: #dc2626; }
     .badge.online { background-color: #059669; }
-    
+
     /* Install banner */
-    .install-banner {
-        background-color: #2563eb;
-        color: white;
-        padding: 1rem;
-        text-align: center;
-        display: none;
-    }
-    
-    .install-banner.show {
-        display: block;
-        animation: slideDown 0.3s ease-out;
-    }
-    
-    @keyframes slideDown {
-        from { transform: translateY(-100%); }
-        to { transform: translateY(0); }
-    }
-    
-    .install-btn {
-        background-color: #1d4ed8;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
-        cursor: pointer;
-        margin-top: 0.5rem;
-    }
-    
-    .install-btn:hover {
-        background-color: #1e40af;
-    }
-    
+    .install-banner { background-color: #2563eb; color: white; padding: 1rem; text-align: center; display: none; }
+    .install-banner.show { display: block; animation: slideDown 0.3s ease-out; }
+    @keyframes slideDown { from { transform: translateY(-100%);} to { transform: translateY(0);} }
+    .install-btn { background-color: #1d4ed8; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.875rem; cursor: pointer; margin-top: 0.5rem; }
+    .install-btn:hover { background-color: #1e40af; }
+
     /* Controls */
-    .controls {
-        padding: 1rem;
-        background-color: #e5e7eb;
-        border-bottom: 1px solid #d1d5db;
-    }
-    
-    .control-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 0.75rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .btn {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        padding: 0.5rem 0.75rem;
-        border: none;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-    
-    .btn-blue { background-color: #3b82f6; color: white; }
-    .btn-blue:hover { background-color: #2563eb; }
-    .btn-green { background-color: #10b981; color: white; }
-    .btn-green:hover { background-color: #059669; }
-    .btn-red { background-color: #ef4444; color: white; }
-    .btn-red:hover { background-color: #dc2626; }
-    
-    .save-status {
-        text-align: center;
-        font-size: 0.75rem;
-        color: #6b7280;
-    }
-    
+    .controls { padding: 1rem; background-color: #e5e7eb; border-bottom: 1px solid #d1d5db; }
+    .control-buttons { display: flex; justify-content: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+    .btn { display: flex; align-items: center; gap: 0.25rem; padding: 0.5rem 0.75rem; border: none; border-radius: 0.375rem; font-size: 0.875rem; cursor: pointer; transition: background-color 0.2s; }
+    .btn-blue { background-color: #3b82f6; color: white; } .btn-blue:hover { background-color: #2563eb; }
+    .btn-green { background-color: #10b981; color: white; } .btn-green:hover { background-color: #059669; }
+    .btn-red { background-color: #ef4444; color: white; } .btn-red:hover { background-color: #dc2626; }
+    .save-status { text-align: center; font-size: 0.75rem; color: #6b7280; }
+
     /* Summary cards */
-    .summary {
-        padding: 1rem;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
-    }
-    
-    .summary-card {
-        background: white;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        border: 1px solid #e5e7eb;
-    }
-    
-    .summary-label {
-        font-size: 0.75rem;
-        color: #6b7280;
-        margin-bottom: 0.25rem;
-    }
-    
-    .summary-value {
-        font-size: 1.125rem;
-        font-weight: bold;
-    }
-    
-    .positive { color: #059669; }
-    .negative { color: #dc2626; }
-    
+    .summary { padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .summary-card { background: white; padding: 1rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; }
+    .summary-label { font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem; }
+    .summary-value { font-size: 1.125rem; font-weight: bold; }
+    .positive { color: #059669; } .negative { color: #dc2626; }
+
     /* Budget sections */
-    .content {
-        padding: 0 1rem 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .budget-section {
-        background: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        border: 1px solid #e5e7eb;
-        overflow: hidden;
-    }
-    
+    .content { padding: 0 1rem 1rem; display: flex; flex-direction: column; gap: 1rem; }
+    .budget-section { background: white; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; overflow: hidden; }
     .section-header {
-        padding: 0.75rem 1rem;
-        font-weight: 600;
-        font-size: 0.875rem;
-        display: flex;
-        justify-content: between;
-        align-items: center;
+      padding: 0.75rem 1rem;
+      font-weight: 600; font-size: 0.875rem;
+      display: flex; justify-content: space-between; align-items: center;
     }
-    
     .section-header.income { background-color: #ecfdf5; color: #065f46; }
     .section-header.savings { background-color: #eff6ff; color: #1e40af; }
     .section-header.housing { background-color: #ecfdf5; color: #065f46; }
     .section-header.transport { background-color: #ecfdf5; color: #065f46; }
+    .section-header.communications { background-color: #fffbeb; color: #92400e; }
     .section-header.family { background-color: #faf5ff; color: #7c2d12; }
     .section-header.living { background-color: #ecfdf5; color: #065f46; }
     .section-header.debt { background-color: #fef2f2; color: #991b1b; }
-    
-    .section-total {
-        font-weight: bold;
-        font-size: 0.875rem;
-    }
-    
-    .budget-line {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid #f3f4f6;
-    }
-    
-    .budget-line:last-child {
-        border-bottom: none;
-    }
-    
-    .budget-line:nth-child(even) {
-        background-color: #fafafa;
-    }
-    
-    .budget-label {
-        font-size: 0.875rem;
-        color: #374151;
-        flex: 1;
-        padding-right: 0.5rem;
-    }
-    
-    .input-group {
-        display: flex;
-        align-items: center;
-    }
-    
-    .naira {
-        color: #059669;
-        font-weight: 600;
-        margin-right: 0.25rem;
-    }
-    
-    .budget-input {
-        width: 7rem;
-        padding: 0.5rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        text-align: right;
-        font-size: 0.875rem;
-    }
-    
-    .budget-input:focus {
-        outline: none;
-        border-color: #059669;
-        box-shadow: 0 0 0 1px #059669;
-    }
-    
+
+    .section-total { font-weight: bold; font-size: 0.875rem; }
+    .budget-line { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-bottom: 1px solid #f3f4f6; }
+    .budget-line:last-child { border-bottom: none; }
+    .budget-line:nth-child(even) { background-color: #fafafa; }
+
+    .budget-label { font-size: 0.875rem; color: #374151; flex: 1; padding-right: 0.5rem; }
+    .input-group { display: flex; align-items: center; }
+    .naira { color: #059669; font-weight: 600; margin-right: 0.25rem; }
+    .budget-input { width: 7rem; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; text-align: right; font-size: 0.875rem; }
+    .budget-input:focus { outline: none; border-color: #059669; box-shadow: 0 0 0 1px #059669; }
+
     /* Final summary */
-    .final-summary {
-        background: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        border: 1px solid #e5e7eb;
-        padding: 1rem;
-    }
-    
-    .summary-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        text-align: center;
-    }
-    
-    .summary-item h3 {
-        font-size: 0.875rem;
-        color: #6b7280;
-        margin-bottom: 0.25rem;
-    }
-    
-    .summary-item .value {
-        font-size: 1.25rem;
-        font-weight: bold;
-    }
-    
-    .alert {
-        margin-top: 0.75rem;
-        padding: 0.75rem;
-        border-radius: 0.375rem;
-        text-align: center;
-        font-size: 0.875rem;
-    }
-    
-    .alert.success {
-        background-color: #d1fae5;
-        border: 1px solid #a7f3d0;
-        color: #065f46;
-    }
-    
-    .alert.error {
-        background-color: #fee2e2;
-        border: 1px solid #fecaca;
-        color: #991b1b;
-    }
-    
+    .final-summary { background: white; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; padding: 1rem; }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center; }
+    .summary-item h3 { font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; }
+    .summary-item .value { font-size: 1.25rem; font-weight: bold; }
+
+    .alert { margin-top: 0.75rem; padding: 0.75rem; border-radius: 0.375rem; text-align: center; font-size: 0.875rem; }
+    .alert.success { background-color: #d1fae5; border: 1px solid #a7f3d0; color: #065f46; }
+    .alert.error { background-color: #fee2e2; border: 1px solid #fecaca; color: #991b1b; }
+
     /* Info boxes */
-    .info-box {
-        border-radius: 0.5rem;
-        padding: 1rem;
-        font-size: 0.875rem;
-    }
-    
-    .info-box.pwa {
-        background-color: #ecfdf5;
-        border: 1px solid #a7f3d0;
-    }
-    
-    .info-box.tips {
-        background-color: #fefce8;
-        border: 1px solid #fde047;
-    }
-    
-    .info-title {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-    
-    .info-list {
-        list-style: none;
-        padding: 0;
-    }
-    
-    .info-list li {
-        margin-bottom: 0.25rem;
-        font-size: 0.75rem;
-    }
-    
-    /* Hidden file input */
-    .hidden {
-        display: none;
-    }
-    
-    /* Icons */
-    .icon {
-        width: 1rem;
-        height: 1rem;
-        display: inline-block;
-        margin-right: 0.25rem;
-    }
-    
+    .info-box { border-radius: 0.5rem; padding: 1rem; font-size: 0.875rem; }
+    .info-box.pwa { background-color: #ecfdf5; border: 1px solid #a7f3d0; }
+    .info-box.tips { background-color: #fefce8; border: 1px solid #fde047; }
+    .info-title { font-weight: 600; margin-bottom: 0.5rem; }
+    .info-list { list-style: none; padding: 0; }
+    .info-list li { margin-bottom: 0.25rem; font-size: 0.75rem; }
+
+    .hidden { display: none; }
+    .icon { width: 1rem; height: 1rem; display: inline-block; margin-right: 0.25rem; }
+
     /* Responsive */
     @media (max-width: 480px) {
-        .control-buttons {
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            flex: 1;
-            min-width: 5rem;
-        }
+      .control-buttons { flex-wrap: wrap; }
+      .btn { flex: 1; min-width: 5rem; }
+      .summary { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: 1fr; }
     }
-</style>
-```
-
+  </style>
 </head>
+
 <body>
-    <div class="container" id="app">
-        <div class="header">
-            <div class="status-badges" id="statusBadges"></div>
-            <h1>Nigerian Budget Tracker</h1>
-            <p id="monthYear"></p>
-        </div>
+  <div class="container" id="app">
+    <div class="header">
+      <div class="status-badges" id="statusBadges"></div>
+      <h1>Nigerian Budget Tracker</h1>
+      <p id="monthYear"></p>
+    </div>
 
-```
     <div class="install-banner" id="installBanner">
-        <div>📱 <strong>Install as App</strong></div>
-        <p style="font-size: 0.75rem; margin: 0.5rem 0;">Add to your home screen for the best experience</p>
-        <button class="install-btn" onclick="installApp()">Add to Home Screen</button>
+      <div>📱 <strong>Install as App</strong></div>
+      <p style="font-size:0.75rem; margin:0.5rem 0;">Add to your home screen for the best experience</p>
+      <button class="install-btn" id="installBtn">Add to Home Screen</button>
     </div>
-    
+
     <div class="controls">
-        <div class="control-buttons">
-            <button class="btn btn-blue" onclick="exportData()">
-                📄 Export
-            </button>
-            <label class="btn btn-green">
-                📁 Import
-                <input type="file" accept=".json" onchange="importData(event)" class="hidden">
-            </label>
-            <button class="btn btn-red" onclick="clearData()">
-                🗑️ Clear
-            </button>
-        </div>
-        <div class="save-status" id="saveStatus">Auto-saved</div>
+      <div class="control-buttons">
+        <button class="btn btn-blue" onclick="exportData()">📄 Export</button>
+
+        <label class="btn btn-green" style="cursor: pointer;">
+          📁 Import
+          <input type="file" accept=".json" onchange="importData(event)" class="hidden" id="importFile">
+        </label>
+
+        <button class="btn btn-red" onclick="clearData()">🗑️ Clear</button>
+      </div>
+      <div class="save-status" id="saveStatus">Auto-saved</div>
     </div>
-    
+
     <div class="summary">
-        <div class="summary-card">
-            <div class="summary-label">Total Income</div>
-            <div class="summary-value positive" id="totalIncomeDisplay">₦0</div>
-        </div>
-        <div class="summary-card">
-            <div class="summary-label">Money Left</div>
-            <div class="summary-value" id="moneyLeftDisplay">₦0</div>
-        </div>
+      <div class="summary-card">
+        <div class="summary-label">Total Income</div>
+        <div class="summary-value positive" id="totalIncomeDisplay">₦0</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Money Left</div>
+        <div class="summary-value" id="moneyLeftDisplay">₦0</div>
+      </div>
     </div>
-    
+
     <div class="content" id="budgetContent">
-        <!-- Budget sections will be generated here -->
+      <!-- Budget sections inserted here -->
     </div>
-    
+
     <div style="padding: 0 1rem 2rem;">
-        <div class="info-box pwa">
-            <div class="info-title">📱 PWA Features Active:</div>
-            <ul class="info-list">
-                <li>✅ Works completely offline</li>
-                <li>✅ Data saved locally on your device</li>
-                <li>✅ Install as app on iPhone home screen</li>
-                <li>✅ Export/Import for backups</li>
-                <li>✅ No internet required after first load</li>
-            </ul>
-        </div>
-        
-        <br>
-        
-        <div class="info-box tips">
-            <div class="info-title">💡 Quick Tips:</div>
-            <ul class="info-list">
-                <li>• Always budget for generator fuel - power outages are common</li>
-                <li>• Prioritize emergency fund - aim for 6-12 months expenses</li>
-                <li>• Join Ajo/Esusu groups for disciplined savings</li>
-                <li>• Export your data regularly for backup</li>
-            </ul>
-        </div>
+      <div class="info-box pwa">
+        <div class="info-title">📱 PWA Features Active:</div>
+        <ul class="info-list">
+          <li>✅ Works offline after first load</li>
+          <li>✅ Data saved locally on your device</li>
+          <li>✅ Install as app on iPhone home screen</li>
+          <li>✅ Export/Import for backups</li>
+        </ul>
+      </div>
+
+      <br>
+
+      <div class="info-box tips">
+        <div class="info-title">💡 Quick Tips:</div>
+        <ul class="info-list">
+          <li>• Always budget for generator fuel - power outages are common</li>
+          <li>• Prioritize emergency fund - aim for 6-12 months expenses</li>
+          <li>• Join Ajo/Esusu groups for disciplined savings</li>
+          <li>• Export your data regularly for backup</li>
+        </ul>
+      </div>
     </div>
-</div>
+  </div>
 
-<script>
-    // Budget data structure
+  <script>
+    // ---------- Data model ----------
     let budgetData = {
-        month: new Date().toLocaleDateString('en-US', { month: 'long' }),
-        year: new Date().getFullYear(),
-        
-        income: {
-            primarySalary: 0,
-            sideHustle: 0,
-            rentalIncome: 0,
-            investments: 0,
-            otherIncome: 0
-        },
-        
-        housing: {
-            rent: 0,
-            electricity: 0,
-            generatorFuel: 0,
-            water: 0,
-            security: 0,
-            internet: 0
-        },
-        
-        transportation: {
-            fuel: 0,
-            maintenance: 0,
-            publicTransport: 0,
-            insurance: 0
-        },
-        
-        communications: {
-            phonesBills: 0,
-            dataSubscription: 0
-        },
-        
-        savings: {
-            emergencyFund: 0,
-            retirement: 0,
-            investments: 0,
-            fixedDeposits: 0,
-            goalSavings: 0,
-            ajoEsusu: 0
-        },
-        
-        family: {
-            familySupport: 0,
-            schoolFees: 0,
-            childrenFeeding: 0,
-            healthcare: 0,
-            religious: 0,
-            community: 0
-        },
-        
-        living: {
-            groceries: 0,
-            cookingGas: 0,
-            diningOut: 0,
-            clothing: 0,
-            hairCare: 0,
-            hygiene: 0,
-            entertainment: 0,
-            gifts: 0,
-            miscellaneous: 0
-        },
-        
-        debt: {
-            bankLoans: 0,
-            creditCards: 0,
-            personalLoans: 0,
-            microfinance: 0
-        }
+      month: new Date().toLocaleString('en-US', { month: 'long' }),
+      year: new Date().getFullYear(),
+
+      income: {
+        primarySalary: 0, sideHustle: 0, rentalIncome: 0, investments: 0, otherIncome: 0
+      },
+
+      housing: { rent: 0, electricity: 0, generatorFuel: 0, water: 0, security: 0, internet: 0 },
+
+      transportation: { fuel: 0, maintenance: 0, publicTransport: 0, insurance: 0 },
+
+      communications: { phoneBills: 0, dataSubscription: 0 },
+
+      savings: { emergencyFund: 0, retirement: 0, investments: 0, fixedDeposits: 0, goalSavings: 0, ajoEsusu: 0 },
+
+      family: { familySupport: 0, schoolFees: 0, childrenFeeding: 0, healthcare: 0, religious: 0, community: 0 },
+
+      living: { groceries: 0, cookingGas: 0, diningOut: 0, clothing: 0, hairCare: 0, hygiene: 0, entertainment: 0, gifts: 0, miscellaneous: 0 },
+
+      debt: { bankLoans: 0, creditCards: 0, personalLoans: 0, microfinance: 0 }
     };
 
-    // Budget categories configuration
+    // ---------- Categories configuration ----------
     const budgetCategories = {
-        income: {
-            title: '💰 Income',
-            class: 'income',
-            fields: {
-                primarySalary: 'Primary Salary/Business',
-                sideHustle: 'Side Hustle',
-                rentalIncome: 'Rental Income',
-                investments: 'Investment Returns',
-                otherIncome: 'Other Income'
-            }
-        },
-        savings: {
-            title: '💎 Savings & Investments',
-            class: 'savings',
-            fields: {
-                emergencyFund: 'Emergency Fund',
-                retirement: 'Retirement (PFA/RSA)',
-                investments: 'Investments',
-                fixedDeposits: 'Fixed Deposits/T-Bills',
-                goalSavings: 'Goal Savings',
-                ajoEsusu: 'Ajo/Esusu'
-            }
-        },
-        housing: {
-            title: '🏠 Housing & Utilities',
-            class: 'housing',
-            fields: {
-                rent: 'Rent/Mortgage',
-                electricity: 'Electricity (NEPA)',
-                generatorFuel: 'Generator Fuel',
-                water: 'Water Supply',
-                security: 'Security/Estate Fees',
-                internet: 'Internet/Cable'
-            }
-        },
-        transportation: {
-            title: '🚗 Transportation',
-            class: 'transport',
-            fields: {
-                fuel: 'Fuel/Petrol',
-                maintenance: 'Vehicle Maintenance',
-                publicTransport: 'Uber/Keke/Bus',
-                insurance: 'Vehicle Insurance'
-            }
-        },
-        communications: {
-            title: '📱 Communications',
-            class: 'transport',
-            fields: {
-                phonesBills: 'Mobile Bills (MTN/Airtel)',
-                dataSubscription: 'Data Subscription'
-            }
-        },
-        family: {
-            title: '👨‍👩‍👧‍👦 Family & Social',
-            class: 'family',
-            fields: {
-                familySupport: 'Family Support',
-                schoolFees: 'School Fees',
-                childrenFeeding: 'Children\'s Feeding',
-                healthcare: 'Healthcare',
-                religious: 'Church/Mosque',
-                community: 'Community Dues'
-            }
-        },
-        living: {
-            title: '🛒 Living Expenses',
-            class: 'living',
-            fields: {
-                groceries: 'Groceries & Market',
-                cookingGas: 'Cooking Gas',
-                diningOut: 'Dining Out',
-                clothing: 'Clothing & Shoes',
-                hairCare: 'Hair Care/Barbing',
-                hygiene: 'Personal Hygiene',
-                entertainment: 'Entertainment',
-                gifts: 'Gifts & Occasions',
-                miscellaneous: 'Miscellaneous'
-            }
-        },
-        debt: {
-            title: '💳 Debt Payments',
-            class: 'debt',
-            fields: {
-                bankLoans: 'Bank Loans',
-                creditCards: 'Credit Card Payments',
-                personalLoans: 'Personal Loans',
-                microfinance: 'Microfinance Loans'
-            }
+      income: {
+        title: '💰 Income', class: 'income',
+        fields: {
+          primarySalary: 'Primary Salary/Business',
+          sideHustle: 'Side Hustle',
+          rentalIncome: 'Rental Income',
+          investments: 'Investment Returns',
+          otherIncome: 'Other Income'
         }
+      },
+
+      savings: {
+        title: '💎 Savings & Investments', class: 'savings',
+        fields: {
+          emergencyFund: 'Emergency Fund',
+          retirement: 'Retirement (PFA/RSA)',
+          investments: 'Investments',
+          fixedDeposits: 'Fixed Deposits/T-Bills',
+          goalSavings: 'Goal Savings',
+          ajoEsusu: 'Ajo/Esusu'
+        }
+      },
+
+      housing: {
+        title: '🏠 Housing & Utilities', class: 'housing',
+        fields: {
+          rent: 'Rent/Mortgage', electricity: 'Electricity (NEPA)', generatorFuel: 'Generator Fuel',
+          water: 'Water Supply', security: 'Security/Estate Fees', internet: 'Internet/Cable'
+        }
+      },
+
+      transportation: {
+        title: '🚗 Transportation', class: 'transport',
+        fields: { fuel: 'Fuel/Petrol', maintenance: 'Vehicle Maintenance', publicTransport: 'Uber/Keke/Bus', insurance: 'Vehicle Insurance' }
+      },
+
+      communications: {
+        title: '📱 Communications', class: 'communications',
+        fields: { phoneBills: 'Mobile Bills (MTN/Airtel)', dataSubscription: 'Data Subscription' }
+      },
+
+      family: {
+        title: '👨‍👩‍👧‍👦 Family & Social', class: 'family',
+        fields: { familySupport: 'Family Support', schoolFees: 'School Fees', childrenFeeding: "Children's Feeding", healthcare: 'Healthcare', religious: 'Church/Mosque', community: 'Community Dues' }
+      },
+
+      living: {
+        title: '🛒 Living Expenses', class: 'living',
+        fields: { groceries: 'Groceries & Market', cookingGas: 'Cooking Gas', diningOut: 'Dining Out', clothing: 'Clothing & Shoes', hairCare: 'Hair Care/Barbing', hygiene: 'Personal Hygiene', entertainment: 'Entertainment', gifts: 'Gifts & Occasions', miscellaneous: 'Miscellaneous' }
+      },
+
+      debt: {
+        title: '💳 Debt Payments', class: 'debt',
+        fields: { bankLoans: 'Bank Loans', creditCards: 'Credit Card Payments', personalLoans: 'Personal Loans', microfinance: 'Microfinance Loans' }
+      }
     };
 
-    // PWA variables
-    let deferredPrompt;
-    let isOnline = navigator.onLine;
+    // ---------- PWA variables ----------
+    let deferredPrompt = null;
 
-    // Load data from localStorage
+    // ---------- Storage ----------
     function loadData() {
-        const saved = localStorage.getItem('nigerianBudget');
-        if (saved) {
-            try {
-                budgetData = { ...budgetData, ...JSON.parse(saved) };
-            } catch (e) {
-                console.error('Error loading saved data:', e);
-            }
-        }
-    }
-
-    // Save data to localStorage
-    function saveData() {
+      const saved = localStorage.getItem('nigerianBudget');
+      if (saved) {
         try {
-            localStorage.setItem('nigerianBudget', JSON.stringify(budgetData));
-            document.getElementById('saveStatus').textContent = `Saved at ${new Date().toLocaleTimeString()}`;
-        } catch (e) {
-            console.error('Error saving data:', e);
-            document.getElementById('saveStatus').textContent = 'Save failed';
-        }
+          const parsed = JSON.parse(saved);
+          // merge carefully to keep structure
+          budgetData = { ...budgetData, ...parsed };
+        } catch (e) { console.error('Error loading saved data:', e); }
+      }
     }
 
-    // Format currency
+    function saveData() {
+      try {
+        localStorage.setItem('nigerianBudget', JSON.stringify(budgetData));
+        document.getElementById('saveStatus').textContent = `Saved at ${new Date().toLocaleTimeString()}`;
+      } catch (e) {
+        console.error('Error saving data:', e);
+        document.getElementById('saveStatus').textContent = 'Save failed';
+      }
+    }
+
+    // ---------- Helpers ----------
     function formatCurrency(amount) {
-        return '₦' + Math.round(amount).toLocaleString();
+      // round to nearest naira for display
+      return '₦' + Math.round(amount).toLocaleString();
     }
 
-    // Calculate category total
     function calculateCategoryTotal(category) {
-        return Object.values(budgetData[category]).reduce((sum, value) => sum + (parseFloat(value) || 0), 0);
+      // guard if category missing
+      const cat = budgetData[category] || {};
+      return Object.values(cat).reduce((sum, value) => sum + (Number(value) || 0), 0);
     }
 
-    // Update input value
     function updateValue(category, field, value) {
-        budgetData[category][field] = value;
-        saveData();
-        updateSummary();
+      // store as numeric value to avoid string concatenation issues
+      budgetData[category][field] = Number(parseFloat(value) || 0);
+      saveData();
+      updateSummary();
     }
 
-    // Update summary displays
+    // ---------- UI updates ----------
     function updateSummary() {
-        const totalIncome = calculateCategoryTotal('income');
-        const totalHousing = calculateCategoryTotal('housing');
-        const totalTransportation = calculateCategoryTotal('transportation');
-        const totalCommunications = calculateCategoryTotal('communications');
-        const totalSavings = calculateCategoryTotal('savings');
-        const totalFamily = calculateCategoryTotal('family');
-        const totalLiving = calculateCategoryTotal('living');
-        const totalDebt = calculateCategoryTotal('debt');
-        
-        const totalExpenses = totalHousing + totalTransportation + totalCommunications + totalSavings + totalFamily + totalLiving + totalDebt;
-        const moneyLeft = totalIncome - totalExpenses;
+      const totalIncome = calculateCategoryTotal('income');
+      const totalHousing = calculateCategoryTotal('housing');
+      const totalTransportation = calculateCategoryTotal('transportation');
+      const totalCommunications = calculateCategoryTotal('communications');
+      const totalSavings = calculateCategoryTotal('savings');
+      const totalFamily = calculateCategoryTotal('family');
+      const totalLiving = calculateCategoryTotal('living');
+      const totalDebt = calculateCategoryTotal('debt');
 
-        document.getElementById('totalIncomeDisplay').textContent = formatCurrency(totalIncome);
-        const moneyLeftEl = document.getElementById('moneyLeftDisplay');
-        moneyLeftEl.textContent = formatCurrency(moneyLeft);
-        moneyLeftEl.className = 'summary-value ' + (moneyLeft >= 0 ? 'positive' : 'negative');
+      const totalExpenses = totalHousing + totalTransportation + totalCommunications + totalSavings + totalFamily + totalLiving + totalDebt;
+      const moneyLeft = totalIncome - totalExpenses;
 
-        // Update section totals
-        Object.keys(budgetCategories).forEach(category => {
-            const totalEl = document.getElementById(`total-${category}`);
-            if (totalEl) {
-                totalEl.textContent = formatCurrency(calculateCategoryTotal(category));
-            }
-        });
+      document.getElementById('totalIncomeDisplay').textContent = formatCurrency(totalIncome);
+      const moneyLeftEl = document.getElementById('moneyLeftDisplay');
+      moneyLeftEl.textContent = formatCurrency(moneyLeft);
+      moneyLeftEl.className = 'summary-value ' + (moneyLeft >= 0 ? 'positive' : 'negative');
 
-        // Update final summary
-        updateFinalSummary(totalExpenses, moneyLeft);
+      // Update per-section totals
+      Object.keys(budgetCategories).forEach(category => {
+        const totalEl = document.getElementById(`total-${category}`);
+        if (totalEl) totalEl.textContent = formatCurrency(calculateCategoryTotal(category));
+      });
+
+      updateFinalSummary(totalExpenses, moneyLeft);
     }
 
-    // Update final summary section
     function updateFinalSummary(totalExpenses, moneyLeft) {
-        const finalSummaryHtml = `
-            <div class="final-summary">
-                <div class="summary-grid">
-                    <div class="summary-item">
-                        <h3>Total Expenses</h3>
-                        <div class="value negative">${formatCurrency(totalExpenses)}</div>
-                    </div>
-                    <div class="summary-item">
-                        <h3>Balance</h3>
-                        <div class="value ${moneyLeft >= 0 ? 'positive' : 'negative'}">${formatCurrency(moneyLeft)}</div>
-                    </div>
-                </div>
-                ${moneyLeft < 0 ? 
-                    `<div class="alert error">⚠️ You're over budget by ${formatCurrency(Math.abs(moneyLeft))}</div>` :
-                    `<div class="alert success">✅ Great! You have ${formatCurrency(moneyLeft)} left to allocate</div>`
-                }
+      const finalSummaryHtml = `
+        <div class="final-summary">
+          <div class="summary-grid">
+            <div class="summary-item">
+              <h3>Total Expenses</h3>
+              <div class="value negative">${formatCurrency(totalExpenses)}</div>
             </div>
-        `;
-        
-        // Find and replace or append final summary
-        const content = document.getElementById('budgetContent');
-        const existingSummary = content.querySelector('.final-summary');
-        if (existingSummary) {
-            existingSummary.outerHTML = finalSummaryHtml;
-        } else {
-            content.insertAdjacentHTML('beforeend', finalSummaryHtml);
-        }
+            <div class="summary-item">
+              <h3>Balance</h3>
+              <div class="value ${moneyLeft >= 0 ? 'positive' : 'negative'}">${formatCurrency(moneyLeft)}</div>
+            </div>
+          </div>
+          ${moneyLeft < 0 ? `<div class="alert error">⚠️ You're over budget by ${formatCurrency(Math.abs(moneyLeft))}</div>` : `<div class="alert success">✅ Great! You have ${formatCurrency(moneyLeft)} left to allocate</div>`}
+        </div>
+      `;
+
+      const content = document.getElementById('budgetContent');
+      const existingSummary = content.querySelector('.final-summary');
+      if (existingSummary) existingSummary.outerHTML = finalSummaryHtml;
+      else content.insertAdjacentHTML('beforeend', finalSummaryHtml);
     }
 
-    // Generate budget section HTML
     function generateBudgetSection(categoryKey, categoryData) {
-        const total = calculateCategoryTotal(categoryKey);
-        
-        let fieldsHtml = '';
-        Object.entries(categoryData.fields).forEach(([fieldKey, fieldLabel]) => {
-            const value = budgetData[categoryKey][fieldKey] || '';
-            fieldsHtml += `
-                <div class="budget-line">
-                    <div class="budget-label">${fieldLabel}</div>
-                    <div class="input-group">
-                        <span class="naira">₦</span>
-                        <input type="number" 
-                               class="budget-input" 
-                               value="${value}" 
-                               placeholder="0"
-                               inputmode="decimal"
-                               onchange="updateValue('${categoryKey}', '${fieldKey}', this.value)">
-                    </div>
-                </div>
-            `;
-        });
+      const total = calculateCategoryTotal(categoryKey);
+      let fieldsHtml = '';
 
-        return `
-            <div class="budget-section">
-                <div class="section-header ${categoryData.class}">
-                    <span>${categoryData.title}</span>
-                    <span class="section-total" id="total-${categoryKey}">${formatCurrency(total)}</span>
-                </div>
-                ${fieldsHtml}
+      Object.entries(categoryData.fields).forEach(([fieldKey, fieldLabel]) => {
+        // ensure we show 0 instead of empty string
+        const value = Number(budgetData[categoryKey][fieldKey] || 0);
+        fieldsHtml += `
+          <div class="budget-line">
+            <div class="budget-label">${fieldLabel}</div>
+            <div class="input-group">
+              <span class="naira">₦</span>
+              <input type="number"
+                     class="budget-input"
+                     value="${value}"
+                     placeholder="0"
+                     inputmode="decimal"
+                     onchange="updateValue('${categoryKey}', '${fieldKey}', this.value)">
             </div>
+          </div>
         `;
+      });
+
+      return `
+        <div class="budget-section">
+          <div class="section-header ${categoryData.class}">
+            <span>${categoryData.title}</span>
+            <span class="section-total" id="total-${categoryKey}">${formatCurrency(total)}</span>
+          </div>
+          ${fieldsHtml}
+        </div>
+      `;
     }
 
-    // Export data
+    // ---------- Export / Import / Clear ----------
     function exportData() {
+      try {
         const dataStr = JSON.stringify(budgetData, null, 2);
-        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
         const url = URL.createObjectURL(dataBlob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `budget-${budgetData.month}-${budgetData.year}.json`;
+        const safeMonth = (budgetData.month || '').replace(/\s+/g, '-').toLowerCase();
+        link.download = `budget-${safeMonth || 'month'}-${budgetData.year || (new Date()).getFullYear()}.json`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
+      } catch (e) { console.error('Export failed:', e); alert('Export failed'); }
     }
 
-    // Import data
     function importData(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    budgetData = { ...budgetData, ...importedData };
-                    saveData();
-                    renderApp();
-                    alert('Budget data imported successfully!');
-                } catch (error) {
-                    alert('Error importing data. Please check the file format.');
-                }
-            };
-            reader.readAsText(file);
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          // merge carefully, keep missing fields intact
+          budgetData = { ...budgetData, ...imported };
+          saveData();
+          renderApp();
+          alert('Budget data imported successfully!');
+        } catch (err) {
+          console.error('Import error:', err);
+          alert('Error importing data. Please check the file format.');
         }
-        event.target.value = '';
+      };
+      reader.readAsText(file);
+      // clear file input so same file can be re-selected
+      event.target.value = '';
     }
 
-    // Clear all data
     function clearData() {
-        if (confirm('Are you sure you want to clear all budget data? This cannot be undone.')) {
-            localStorage.removeItem('nigerianBudget');
-            location.reload();
-        }
+      if (confirm('Are you sure you want to clear all budget data? This cannot be undone.')) {
+        localStorage.removeItem('nigerianBudget');
+        location.reload();
+      }
     }
 
-    // Install PWA
+    // ---------- Install PWA ----------
     function installApp() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    document.getElementById('installBanner').classList.remove('show');
-                }
-                deferredPrompt = null;
-            });
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(choice => {
+        if (choice.outcome === 'accepted') {
+          document.getElementById('installBanner').classList.remove('show');
         }
+        deferredPrompt = null;
+      }).catch(err => console.warn('install prompt error', err));
     }
 
-    // Update online/offline status
-    function updateOnlineStatus() {
-        const statusBadges = document.getElementById('statusBadges');
-        statusBadges.innerHTML = isOnline ? 
-            '<div class="badge online">Online</div><div class="badge">PWA Ready</div>' :
-            '<div class="badge offline">Offline</div><div class="badge">PWA Ready</div>';
+    // ---------- Online / offline ----------
+    function updateOnlineStatusUI() {
+      const statusBadges = document.getElementById('statusBadges');
+      const online = navigator.onLine;
+      statusBadges.innerHTML = online
+        ? '<div class="badge online">Online</div><div class="badge">PWA Ready</div>'
+        : '<div class="badge offline">Offline</div><div class="badge">PWA Ready</div>';
     }
 
-    // Render the complete app
+    // ---------- Render ----------
     function renderApp() {
-        // Update month/year
-        document.getElementById('monthYear').textContent = `${budgetData.month} ${budgetData.year}`;
-        
-        // Generate budget sections
-        const content = document.getElementById('budgetContent');
-        let sectionsHtml = '';
-        
-        Object.entries(budgetCategories).forEach(([categoryKey, categoryData]) => {
-            sectionsHtml += generateBudgetSection(categoryKey, categoryData);
-        });
-        
-        content.innerHTML = sectionsHtml;
-        
-        // Update summary
-        updateSummary();
-        
-        // Update online status
-        updateOnlineStatus();
+      // month/year display
+      document.getElementById('monthYear').textContent = `${budgetData.month} ${budgetData.year}`;
+
+      // generate sections
+      const content = document.getElementById('budgetContent');
+      let sectionsHtml = '';
+      Object.entries(budgetCategories).forEach(([categoryKey, categoryData]) => {
+        sectionsHtml += generateBudgetSection(categoryKey, categoryData);
+      });
+
+      // set HTML but keep final summary separate (it will be appended by updateFinalSummary)
+      content.innerHTML = sectionsHtml;
+
+      // update summary values
+      updateSummary();
+
+      // update online/offline badges
+      updateOnlineStatusUI();
     }
 
-    // Initialize app
+    // ---------- Init ----------
     function init() {
-        loadData();
-        renderApp();
+      loadData();
+      renderApp();
 
-        // PWA install prompt handling
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installBanner').classList.add('show');
-        });
+      // beforeinstallprompt handler to show custom banner
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('installBanner').classList.add('show');
+      });
 
-        window.addEventListener('appinstalled', () => {
-            document.getElementById('installBanner').classList.remove('show');
-            deferredPrompt = null;
-        });
+      window.addEventListener('appinstalled', () => {
+        document.getElementById('installBanner').classList.remove('show');
+        deferredPrompt = null;
+      });
 
-        // Online/offline status
-        window.addEventListener('online', () => {
-            isOnline = true;
-            updateOnlineStatus();
-        });
+      window.addEventListener('online', updateOnlineStatusUI);
+      window.addEventListener('offline', updateOnlineStatusUI);
 
-        window.addEventListener('offline', () => {
-            isOnline = false;
-            updateOnlineStatus();
-        });
+      // wire install button
+      document.getElementById('installBtn').addEventListener('click', installApp);
 
-        console.log('Nigerian Budget Tracker loaded successfully!');
+      console.log('Nigerian Budget Tracker loaded successfully!');
     }
 
-    // Start the app when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
 
-    // Service Worker registration
+
+    // ---------- Service Worker registration (Blob approach) ----------
+    // This registers a service worker created from a string (no separate file required).
+    // It caches "./" and network-fallsback-to-fetch. Works on GitHub Pages subpaths as long as requests are relative.
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            const swCode = `
-                const CACHE_NAME = 'nigerian-budget-v1.0.0';
-                const urlsToCache = ['/'];
+      window.addEventListener('load', () => {
+        try {
+          const swCode = `
+            const CACHE_NAME = 'nigerian-budget-v1.0.1';
+            const urlsToCache = ['./', './index.html'];
 
-                self.addEventListener('install', function(event) {
-                    event.waitUntil(
-                        caches.open(CACHE_NAME)
-                            .then(function(cache) {
-                                return cache.addAll(urlsToCache);
-                            })
-                    );
-                });
+            self.addEventListener('install', (event) => {
+              event.waitUntil(
+                caches.open(CACHE_NAME)
+                  .then((cache) => cache.addAll(urlsToCache))
+                  .catch(err => console.error('Cache addAll failed', err))
+              );
+              self.skipWaiting();
+            });
 
-                self.addEventListener('fetch', function(event) {
-                    event.respondWith(
-                        caches.match(event.request)
-                            .then(function(response) {
-                                if (response) {
-                                    return response;
-                                }
-                                return fetch(event.request);
-                            })
-                    );
-                });
-            `;
-            
-            const blob
-```
+            self.addEventListener('activate', (event) => {
+              event.waitUntil(
+                caches.keys().then((keys) => Promise.all(
+                  keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+                ))
+              );
+              self.clients.claim();
+            });
+
+            self.addEventListener('fetch', (event) => {
+              // Only handle GET requests
+              if (event.request.method !== 'GET') return;
+              event.respondWith(
+                caches.match(event.request).then((cached) => {
+                  if (cached) return cached;
+                  return fetch(event.request).then((response) => {
+                    // optionally cache new resources (non opaque)
+                    try {
+                      const responseClone = response.clone();
+                      if (response && response.status === 200 && response.type === 'basic') {
+                        caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+                      }
+                    } catch (e) {
+                      // ignore any caching errors
+                    }
+                    return response;
+                  }).catch(() => {
+                    // fallback: return cached root if available
+                    return caches.match('./');
+                  });
+                })
+              );
+            });
+          `;
+
+          const blob = new Blob([swCode], { type: 'application/javascript' });
+          const swUrl = URL.createObjectURL(blob);
+
+          navigator.serviceWorker.register(swUrl)
+            .then(reg => console.log('Service worker registered (blob)', reg.scope))
+            .catch(err => console.warn('Service worker registration failed', err));
+        } catch (err) {
+          console.error('Service worker setup failed', err);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
